@@ -54,6 +54,11 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 			return
 		}
 
+		if (this.cursor >= len(this.stack)) || (this.cursor < 0) {
+			err = errors.New("Pointer out of range.")
+			return
+		}
+
 		char := code[i]
 		switch char {
 			case ShiftR:
@@ -67,7 +72,7 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 				this.stack[this.cursor]--
 			case LoopL:
 				if this.stack[this.cursor] == 0 {
-					i = this.findLoopR(code, i)
+					i = this.findLoopR(code, i, 0)
 
 					if i < 0 {
 						err = errors.New("Loop mismatch")
@@ -76,7 +81,7 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 				}
 			case LoopR:
 				if this.stack[this.cursor] != 0 {
-					i = this.findLoopL(code, i)
+					i = this.findLoopL(code, i, 0)
 
 					if i < 0 {
 						err = errors.New("Loop mismatch")
@@ -122,7 +127,11 @@ func (this *Brainfuck) bufferPop() (b byte) {
 	return
 }
 
-func (this *Brainfuck) findLoopR(code string, i int) int {
+func (this *Brainfuck) findLoopR(code string, i int, count int) int {
+	if count >= 1024 {
+		return -1
+	}
+
 	for i = i - 1; i < len(code); i++ {
 		if i < 0 {
 			return -1
@@ -131,7 +140,11 @@ func (this *Brainfuck) findLoopR(code string, i int) int {
 		char := code[i]
 		switch char {
 			case LoopL:
-				i = this.findLoopR(code, i)
+				i = this.findLoopR(code, i, count + 1)
+
+				if i == -1 {
+					return -1
+				}
 			case LoopR:
 				return i
 		}
@@ -140,12 +153,20 @@ func (this *Brainfuck) findLoopR(code string, i int) int {
 	return -1
 }
 
-func (this *Brainfuck) findLoopL(code string, i int) int {
+func (this *Brainfuck) findLoopL(code string, i int, count int) int {
+	if count >= 1024 {
+		return -1
+	}
+
 	for i = i - 1; i > 0; i-- {
 		char := code[i]
 		switch char {
 			case LoopR:
-				i = this.findLoopL(code, i)
+				i = this.findLoopL(code, i, count + 1)
+
+				if i == -1 {
+					return -1
+				}
 			case LoopL:
 				return i
 		}
