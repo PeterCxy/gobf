@@ -19,6 +19,7 @@ type Brainfuck struct {
 	cursor int
 	buffer string
 	input func() string
+	interrupter func() bool
 }
 
 // Create a new instance of Brainfuck
@@ -38,9 +39,21 @@ func (this *Brainfuck) SetInput(i func() string) *Brainfuck {
 	return this
 }
 
+// A Interrupter
+// When returning true, the current execution will be interrupted
+func (this *Brainfuck) SetInterrupter(i func() bool) *Brainfuck {
+	this.interrupter = i
+	return this
+}
+
 // Execute Brainfuck code
 func (this *Brainfuck) Exec(code string) (out string, err error) {
 	for i := 0; i < len(code); i++ {
+		if (this.interrupter != nil) && this.interrupter() {
+			err = errors.New("Interrupted")
+			return
+		}
+
 		char := code[i]
 		switch char {
 			case ShiftR:
