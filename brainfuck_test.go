@@ -27,3 +27,15 @@ func TestPlus(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestMultiply(t *testing.T) {
+	// 3 * 3
+	res, err := New().Exec(`+++>+++[[<+>>+<-]>[<+>-]<-]++++++
+		[<++++++++>-]<.`)
+
+	fmt.Println(res)
+
+	if err != nil {
+		t.Fail()
+	}
+}
