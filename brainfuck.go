@@ -17,6 +17,8 @@ const (
 type Brainfuck struct {
 	stack []byte
 	cursor int
+	buffer string
+	input func() string
 }
 
 // Create a new instance of Brainfuck
@@ -25,6 +27,15 @@ func New() *Brainfuck {
 		stack: make([]byte, 1),
 		cursor: 0,
 	}
+}
+
+// Set an input source
+// Everytime a input is received, it will be stored to the buffer
+// When reading, the buffer will be poped out byte by byte
+// If the buffer has run out, the input function will be called again.
+func (this *Brainfuck) SetInput(i func() string) *Brainfuck {
+	this.input = i
+	return this
 }
 
 // Execute Brainfuck code
@@ -62,7 +73,7 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 			case Print:
 				out += string(this.stack[this.cursor])
 			case Read:
-				// Not implemented
+				this.stack[this.cursor] = this.readInput()
 		}
 	}
 
@@ -78,6 +89,24 @@ func (this *Brainfuck) realloc() {
 			}
 		}
 	}
+}
+
+func (this *Brainfuck) readInput() byte {
+	if len(this.buffer) == 0 {
+		if this.input != nil {
+			this.buffer = this.input()
+		} else {
+			return 0
+		}
+	}
+
+	return this.bufferPop()
+}
+
+func (this *Brainfuck) bufferPop() (b byte) {
+	b = this.buffer[0]
+	this.buffer = this.buffer[1:]
+	return
 }
 
 func (this *Brainfuck) findLoopR(code string, i int) int {

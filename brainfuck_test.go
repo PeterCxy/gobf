@@ -39,3 +39,20 @@ func TestMultiply(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestInput(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	} else {
+		res, err := New().SetInput(func() (str string) {
+			str = "test"
+			return
+		}).Exec(`++++[>,>++++++++[<---->-]<.<-]`)
+
+		fmt.Println(res)
+
+		if err != nil {
+			t.Fail()
+		}
+	}
+}
