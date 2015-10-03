@@ -158,7 +158,7 @@ func (this *Brainfuck) findLoopL(code string, i int, count int) int {
 		return -1
 	}
 
-	for i = i - 1; i > 0; i-- {
+	for i = i - 1; i >= 0; i-- {
 		char := code[i]
 		switch char {
 			case LoopR:
