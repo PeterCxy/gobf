@@ -18,7 +18,7 @@ type Brainfuck struct {
 	stack []byte
 	cursor int
 	buffer string
-	input func() string
+	input func(string) string
 	interrupter func() bool
 }
 
@@ -34,7 +34,8 @@ func New() *Brainfuck {
 // Everytime a input is received, it will be stored to the buffer
 // When reading, the buffer will be poped out byte by byte
 // If the buffer has run out, the input function will be called again.
-func (this *Brainfuck) SetInput(i func() string) *Brainfuck {
+// Everytime an input is required, the output buffer will be cleared
+func (this *Brainfuck) SetInput(i func(string) string) *Brainfuck {
 	this.input = i
 	return this
 }
@@ -91,7 +92,7 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 			case Print:
 				out += string(this.stack[this.cursor])
 			case Read:
-				this.stack[this.cursor] = this.readInput()
+				this.stack[this.cursor] = this.readInput(&out)
 		}
 	}
 
@@ -109,10 +110,11 @@ func (this *Brainfuck) realloc() {
 	}
 }
 
-func (this *Brainfuck) readInput() byte {
+func (this *Brainfuck) readInput(out *string) byte {
 	if len(this.buffer) == 0 {
 		if this.input != nil {
-			this.buffer = this.input()
+			this.buffer = this.input(*out)
+			*out = ""
 		} else {
 			return 0
 		}

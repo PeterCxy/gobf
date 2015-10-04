@@ -45,7 +45,7 @@ func TestInput(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	} else {
-		res, err := New().SetInput(func() (str string) {
+		res, err := New().SetInput(func(out string) (str string) {
 			str = "test"
 			return
 		}).Exec(`++++[>,>++++++++[<---->-]<.<-]`)
