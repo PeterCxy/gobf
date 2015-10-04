@@ -141,7 +141,7 @@ func (this *Brainfuck) findLoopR(code string, i int, count int) int {
 		return -1
 	}
 
-	for i = i - 1; i < len(code); i++ {
+	for i = i + 1; i < len(code); i++ {
 		if i < 0 {
 			return -1
 		}
