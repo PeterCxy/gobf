@@ -67,6 +67,7 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 				this.realloc()
 			case ShiftL:
 				this.cursor--
+				this.realloc()
 			case OnePlus:
 				this.stack[this.cursor]++
 			case OneMinus:
