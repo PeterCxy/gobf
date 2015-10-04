@@ -100,6 +100,12 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 }
 
 func (this *Brainfuck) realloc() {
+	if this.cursor >= 30000 {
+		this.cursor = this.cursor - 30000
+	} else if this.cursor < 0 {
+		this.cursor = 30000 + this.cursor
+	}
+
 	if this.cursor >= len(this.stack) {
 		for {
 			this.stack = append(this.stack, 0)
