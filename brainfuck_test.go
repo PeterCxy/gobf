@@ -1,8 +1,8 @@
 package brainfuck
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 	"time"
 )
 

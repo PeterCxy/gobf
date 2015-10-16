@@ -4,28 +4,28 @@ package brainfuck
 import "errors"
 
 const (
-	ShiftR = '>'
-	ShiftL = '<'
-	OnePlus = '+'
+	ShiftR   = '>'
+	ShiftL   = '<'
+	OnePlus  = '+'
 	OneMinus = '-'
-	LoopL = '['
-	LoopR = ']'
-	Print = '.'
-	Read = ','
+	LoopL    = '['
+	LoopR    = ']'
+	Print    = '.'
+	Read     = ','
 )
 
 type Brainfuck struct {
-	stack []byte
-	cursor int
-	buffer string
-	input func(string) string
+	stack       []byte
+	cursor      int
+	buffer      string
+	input       func(string) string
 	interrupter func() bool
 }
 
 // Create a new instance of Brainfuck
 func New() *Brainfuck {
 	return &Brainfuck{
-		stack: make([]byte, 1),
+		stack:  make([]byte, 1),
 		cursor: 0,
 	}
 }
@@ -62,38 +62,38 @@ func (this *Brainfuck) Exec(code string) (out string, err error) {
 
 		char := code[i]
 		switch char {
-			case ShiftR:
-				this.cursor++
-				this.realloc()
-			case ShiftL:
-				this.cursor--
-				this.realloc()
-			case OnePlus:
-				this.stack[this.cursor]++
-			case OneMinus:
-				this.stack[this.cursor]--
-			case LoopL:
-				if this.stack[this.cursor] == 0 {
-					i = this.findLoopR(code, i, 0)
+		case ShiftR:
+			this.cursor++
+			this.realloc()
+		case ShiftL:
+			this.cursor--
+			this.realloc()
+		case OnePlus:
+			this.stack[this.cursor]++
+		case OneMinus:
+			this.stack[this.cursor]--
+		case LoopL:
+			if this.stack[this.cursor] == 0 {
+				i = this.findLoopR(code, i, 0)
 
-					if i < 0 {
-						err = errors.New("Loop mismatch")
-						return
-					}
+				if i < 0 {
+					err = errors.New("Loop mismatch")
+					return
 				}
-			case LoopR:
-				if this.stack[this.cursor] != 0 {
-					i = this.findLoopL(code, i, 0)
+			}
+		case LoopR:
+			if this.stack[this.cursor] != 0 {
+				i = this.findLoopL(code, i, 0)
 
-					if i < 0 {
-						err = errors.New("Loop mismatch")
-						return
-					}
+				if i < 0 {
+					err = errors.New("Loop mismatch")
+					return
 				}
-			case Print:
-				out += string(this.stack[this.cursor])
-			case Read:
-				this.stack[this.cursor] = this.readInput(&out)
+			}
+		case Print:
+			out += string(this.stack[this.cursor])
+		case Read:
+			this.stack[this.cursor] = this.readInput(&out)
 		}
 	}
 
@@ -148,14 +148,14 @@ func (this *Brainfuck) findLoopR(code string, i int, count int) int {
 
 		char := code[i]
 		switch char {
-			case LoopL:
-				i = this.findLoopR(code, i, count + 1)
+		case LoopL:
+			i = this.findLoopR(code, i, count+1)
 
-				if i == -1 {
-					return -1
-				}
-			case LoopR:
-				return i
+			if i == -1 {
+				return -1
+			}
+		case LoopR:
+			return i
 		}
 	}
 
@@ -170,14 +170,14 @@ func (this *Brainfuck) findLoopL(code string, i int, count int) int {
 	for i = i - 1; i >= 0; i-- {
 		char := code[i]
 		switch char {
-			case LoopR:
-				i = this.findLoopL(code, i, count + 1)
+		case LoopR:
+			i = this.findLoopL(code, i, count+1)
 
-				if i == -1 {
-					return -1
-				}
-			case LoopL:
-				return i
+			if i == -1 {
+				return -1
+			}
+		case LoopL:
+			return i
 		}
 	}
 
